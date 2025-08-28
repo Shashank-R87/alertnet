@@ -1,5 +1,8 @@
 import { useAuth } from '@/context/AuthContext'
 import { Image } from 'expo-image'
+import { LinearGradient } from 'expo-linear-gradient'
+import { Link } from 'expo-router'
+import { StatusBar } from 'expo-status-bar'
 import React from 'react'
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
@@ -55,17 +58,25 @@ const Profile = () => {
                 </View>
                 <View className='flex flex-col justify-start items-start w-full bg-[#F3F4F6] rounded-xl p-5 gap-2'>
                     <Text style={{ fontFamily: "Poppins_500Medium" }} className='text-xl'>More</Text>
-                    <TouchableOpacity activeOpacity={0.6} className='flex bg-white flex-row justify-start gap-3 items-center w-full rounded-lg px-3 py-3'>
-                        <Image
-                            source={require('@/assets/images/noun-heart.svg')}
-                            style={styles.heart}
-                        />
-                        <View className='flex flex-col justify-center items-start w-full'>
-                            <Text className='text-lg' style={{ fontFamily: "Poppins_500Medium" }}>About App</Text>
-                        </View>
-                    </TouchableOpacity>
+                    <Link href={'/about'} asChild>
+                        <TouchableOpacity activeOpacity={0.6} className='flex bg-white flex-row justify-start gap-3 items-center w-full rounded-lg px-3 py-3'>
+                            <Image
+                                source={require('@/assets/images/noun-heart.svg')}
+                                style={styles.heart}
+                            />
+                            <View className='flex flex-col justify-center items-start w-full'>
+                                <Text className='text-lg' style={{ fontFamily: "Poppins_500Medium" }}>About App</Text>
+                            </View>
+                        </TouchableOpacity>
+                    </Link>
                 </View>
             </View>
+            <LinearGradient
+                style={styles.fadeOverlay}
+                colors={['rgba(255, 255, 255, 0)', 'rgba(255, 255, 255, 1)']}
+                pointerEvents={'none'}
+            />
+            <StatusBar style="dark" />
         </SafeAreaView>
     )
 }
