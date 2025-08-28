@@ -39,7 +39,7 @@ const ZoneMapComponent = ({ location, zone, enableInteraction }: ZoneMapProps) =
         rotateEnabled={enableInteraction}
       >
         <UrlTile
-          urlTemplate="https://tiles.stadiamaps.com/tiles/alidade_smooth_dark/{z}/{x}/{y}.png"
+          urlTemplate="https://tiles.stadiamaps.com/tiles/alidade_smooth/{z}/{x}/{y}.png"
           maximumZ={19}
         />
 
