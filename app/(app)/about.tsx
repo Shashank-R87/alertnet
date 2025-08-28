@@ -18,8 +18,8 @@ const About = () => {
                     <Text className='text-lg text-center' style={{ fontFamily: "Poppins_400Regular" }}>{'Connecting drivers,\nsecuring roads.'}</Text>
                 </View>
                 <View className='flex justify-center items-center'>
-                    <Text className='text-base' style={{ fontFamily: "Poppins_500Medium" }}>Version: 0.1.0</Text>
-                    <Text className='text-base' style={{ fontFamily: "Poppins_500Medium" }}>Build: 0.1.0 (preview)</Text>
+                    <Text className='text-base' style={{ fontFamily: "Poppins_500Medium" }}>Version: 1.0.0</Text>
+                    <Text className='text-base' style={{ fontFamily: "Poppins_500Medium" }}>Build: 1.0.0 (preview)</Text>
                     <Text className='text-base' style={{ fontFamily: "Poppins_500Medium" }}>Copyright @ 2025</Text>
                 </View>
                 <View className='px-12'>

@@ -23,8 +23,6 @@ const ZoneMap = () => {
     console.error("Failed to parse zone or location params:", e);
   }
 
-  console.log(zone)
-
   return (
     zone ? (
       <View>
