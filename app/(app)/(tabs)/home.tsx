@@ -217,10 +217,10 @@ function HomeScreen() {
   const status = useGeofenceStatus(permission, location, zone);
   const [listening, alerts] = useZoneAlerts(status === "Inside", zone?.contractAddress);
 
-  useEffect(() => {
-    if (!location?.coords) return;
-    refetch(location.coords.latitude, location.coords.longitude, true);
-  }, [status]);
+  // useEffect(() => {
+  //   if (!location?.coords) return;
+  //   refetch(location.coords.latitude, location.coords.longitude, true);
+  // }, [status]);
 
   const tabBarHeight = useBottomTabBarHeight();
 

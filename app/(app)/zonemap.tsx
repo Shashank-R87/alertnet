@@ -25,9 +25,7 @@ const ZoneMap = () => {
 
   return (
     zone ? (
-      <View>
-        <ZoneMapComponent location={location} zone={zone} enableInteraction={true} />
-      </View>
+      <ZoneMapComponent location={location} zone={zone} enableInteraction={true} />
     ) : (
       <View style={styles.mapPlaceholder} className='w-full aspect-square'>
         <ActivityIndicator size="small" color="#808080" />
