@@ -1,29 +1,60 @@
-import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
-import { useFonts } from 'expo-font';
-import { Stack } from 'expo-router';
-import { StatusBar } from 'expo-status-bar';
-import 'react-native-reanimated';
+import { initializeNotifications } from '@/components/NotificationButton';
+import { AuthProvider, useAuth } from '@/context/AuthContext';
+import { Poppins_400Regular, Poppins_500Medium, useFonts } from '@expo-google-fonts/poppins';
+import { GoogleSignin } from '@react-native-google-signin/google-signin';
+import { Slot, useRouter, useSegments } from 'expo-router';
+import * as SplashScreen from 'expo-splash-screen';
+import { useEffect } from 'react';
+import '../global.css';
 
-import { useColorScheme } from '@/hooks/useColorScheme';
+SplashScreen.preventAutoHideAsync();
+initializeNotifications();
 
-export default function RootLayout() {
-  const colorScheme = useColorScheme();
-  const [loaded] = useFonts({
-    SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
+GoogleSignin.configure({
+  iosClientId: "116250151998-bct3cu88f6lu3fqjngsvk9sb9fim7kro.apps.googleusercontent.com",
+  webClientId: "116250151998-l4ks9m1bbkgebbqmooko2golk0mi2s0q.apps.googleusercontent.com",
+  profileImageSize: 150
+})
+
+function RootLayoutNav() {
+  const { user, isLoading } = useAuth();
+  const router = useRouter();
+  const segments = useSegments();
+
+  const [fontsLoaded] = useFonts({
+    Poppins_400Regular,
+    Poppins_500Medium
   });
 
-  if (!loaded) {
-    // Async font loading only occurs in development.
+  useEffect(() => {
+    if (isLoading || !fontsLoaded) {
+      return;
+    }
+
+    const inAppGroup = segments[0] === '(app)';
+    const inAuthGroup = segments[0] === '(auth)';
+    
+    if (user && !inAppGroup) {
+      router.replace({ pathname: '/home' });
+    } else if (!user && !inAuthGroup) {
+      router.replace({ pathname: '/login' });
+    }
+
+    SplashScreen.hideAsync();
+
+  }, [user, isLoading, fontsLoaded, segments]);
+
+  if (isLoading || !fontsLoaded) {
     return null;
   }
 
+  return <Slot />;
+}
+
+export default function RootLayout() {
   return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <Stack>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="+not-found" />
-      </Stack>
-      <StatusBar style="auto" />
-    </ThemeProvider>
+    <AuthProvider>
+      <RootLayoutNav />
+    </AuthProvider>
   );
 }
