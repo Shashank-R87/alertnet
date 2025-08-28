@@ -17,7 +17,7 @@ function LoginButton() {
             className='bg-gray-100 rounded-xl px-5 py-2 flex flex-row gap-2 justify-center items-center shadow-sm shadow-slate-400'
         >
             <Image
-                source={{ uri: "https://img.icons8.com/fluency/240/google-logo.png" }}
+                source={require('@/assets/images/icons8-google.svg')}
                 style={styles.logo}
             />
             <Text style={{ fontFamily: "Poppins_400Regular" }} className='text-lg'>
