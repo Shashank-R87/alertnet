@@ -1,12 +1,21 @@
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
-const AlertCard = ({zoneNumber}:{zoneNumber: number}) => {
+type Alert = {
+  zoneNumber: number;
+  message: string;
+  numberPlate: string;
+  make: string;
+  model: string;
+  wtc: string;
+};
+
+const AlertCard = ({alert}:{alert: Alert}) => {
   return (
             <View className='flex flex-col gap-1 bg-white w-full rounded-lg px-4 py-4'>
               <View className='flex-row flew justify-between'>
                 <Text style={{ fontFamily: "Poppins_500Medium" }} className='text-base pb-1'>
-                  Alert Active: Zone {zoneNumber}
+                  Alert Active: Zone {alert.zoneNumber}
                 </Text>
                 <Text style={{ fontFamily: "Poppins_500Medium" }} className='text-base pb-1 text-gray-500'>
                   26th August 2025
@@ -14,25 +23,25 @@ const AlertCard = ({zoneNumber}:{zoneNumber: number}) => {
               </View>
 
               <Text style={{ fontFamily: "Poppins_400Regular" }} className='text-base text-gray-500 text-justify'>
-                Single-vehicle incident reported. Preliminary cause is suspected driver fatigue leading to loss of control.
+                {alert.message}
               </Text>
 
               <View style={styles.gridContainer}>
                 <View className='flex-row gap-2' style={{ width: '100%' }}>
                   <Text style={{ fontFamily: "Poppins_500Medium" }} className='text-base'>Number Plate</Text>
-                  <Text style={{ fontFamily: "Poppins_500Medium" }} className='text-base text-gray-500'>{'MH12AB1234'}</Text>
+                  <Text style={{ fontFamily: "Poppins_500Medium" }} className='text-base text-gray-500'>{alert.numberPlate}</Text>
                 </View>
                 <View className='flex-row gap-2 col-span-1'>
                   <Text style={{ fontFamily: "Poppins_500Medium" }} className='text-base'>Make</Text>
-                  <Text style={{ fontFamily: "Poppins_500Medium" }} className='text-base text-gray-500'>{'Toyota'}</Text>
+                  <Text style={{ fontFamily: "Poppins_500Medium" }} className='text-base text-gray-500'>{alert.make}</Text>
                 </View>
                 <View className='flex-row gap-2 col-span-1'>
                   <Text style={{ fontFamily: "Poppins_500Medium" }} className='text-base'>Model</Text>
-                  <Text style={{ fontFamily: "Poppins_500Medium" }} className='text-base text-gray-500'>{'Innova'}</Text>
+                  <Text style={{ fontFamily: "Poppins_500Medium" }} className='text-base text-gray-500'>{alert.model}</Text>
                 </View>
                 <View className='flex-row gap-2 col-span-1'>
                   <Text style={{ fontFamily: "Poppins_500Medium" }} className='text-base'>WTC</Text>
-                  <Text style={{ fontFamily: "Poppins_500Medium" }} className='text-base text-gray-500'>{'2.5L Diesel'}</Text>
+                  <Text style={{ fontFamily: "Poppins_500Medium" }} className='text-base text-gray-500'>{alert.wtc}</Text>
                 </View>
               </View>
 

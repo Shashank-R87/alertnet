@@ -30,7 +30,12 @@ const AlertLoader = ({ listening }: { listening: boolean }) => {
         <Text className='text-gray-500 pt-2' style={{ fontFamily: "Poppins_500Medium" }}>Listening to alerts...</Text>
       </View >
       :
-      <></>
+      <View style={styles.mapPlaceholder} >
+        <View className='border-2 border-red-300 p-[2]' style={{ borderRadius: 100 }}>
+          <View className='w-4 h-4 bg-red-300' style={{ borderRadius: 100 }}></View>
+        </View>
+        <Text className='text-gray-500 pt-2' style={{ fontFamily: "Poppins_500Medium" }}>Inactive</Text>
+      </View >
   )
 }
 
