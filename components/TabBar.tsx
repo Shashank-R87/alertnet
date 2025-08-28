@@ -1,5 +1,4 @@
 import FontAwesome from '@expo/vector-icons/FontAwesome';
-import FontAwesome5 from '@expo/vector-icons/FontAwesome5';
 import Foundation from '@expo/vector-icons/Foundation';
 import { BottomTabBarProps } from '@react-navigation/bottom-tabs';
 import React from 'react';
@@ -9,8 +8,7 @@ export function MyTabBar({ state, descriptors, navigation }: BottomTabBarProps) 
 
     const icon: Record<string, (props: any) => JSX.Element> = {
         home: (props: any) => <Foundation name="home" size={24} color={'#000'} {...props} />,
-        details: (props: any) => <FontAwesome5 name="car-alt" size={22} color={'#000'} {...props} />,
-        profile: (props: any) => <FontAwesome name="user" size={24} color={'#000'} {...props}/>,
+        profile: (props: any) => <FontAwesome name="user" size={24} color={'#000'} {...props} />,
     };
 
     return (
@@ -61,16 +59,17 @@ export function MyTabBar({ state, descriptors, navigation }: BottomTabBarProps) 
 const styles = StyleSheet.create({
     tabbar: {
         position: 'absolute',
+        display: 'flex',
         bottom: 30,
         flexDirection: 'row',
         justifyContent: "space-between",
         alignItems: 'center',
         backgroundColor: '#fff',
-        marginHorizontal: 100,
+        marginHorizontal: 120,
         paddingVertical: 15,
         borderRadius: 35,
     },
-    tabbarItem:{
+    tabbarItem: {
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',

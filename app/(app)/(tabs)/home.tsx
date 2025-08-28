@@ -20,7 +20,16 @@ type Zone = {
   contractAddress: string;
   latitude: number;
   longitude: number;
-  radius: number; // meters
+  radius: number
+};
+
+type Alert = {
+  zoneNumber: number;
+  message: string;
+  numberPlate: string;
+  make: string;
+  model: string;
+  wtc: string;
 };
 
 type GeoStatus = "Inside" | "Outside" | "Checking..." | "Permission Denied";
@@ -28,7 +37,6 @@ type GeoStatus = "Inside" | "Outside" | "Checking..." | "Permission Denied";
 const API_CHECK_ZONE = "https://dbsxbxyn12.execute-api.ap-south-1.amazonaws.com/findZone";
 const INFURA_WS_URL = `wss://sepolia.infura.io/ws/v3/d78f0b4330ec4a16aafc769d03977a98`;
 
-// ---------- helpers ----------
 function haversine(p1: { lat: number; lon: number }, p2: { lat: number; lon: number }) {
   const R = 6371e3;
   const φ1 = (p1.lat * Math.PI) / 180;
@@ -38,13 +46,12 @@ function haversine(p1: { lat: number; lon: number }, p2: { lat: number; lon: num
   const a =
     Math.sin(Δφ / 2) ** 2 +
     Math.cos(φ1) * Math.cos(φ2) * Math.sin(Δλ / 2) ** 2;
-  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a)); // meters
+  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 }
 
 const fmt = (n?: number, d: number = 4) =>
   typeof n === "number" ? n.toFixed(d) : "--";
 
-// ---------- hooks ----------
 function useLocation() {
   const [permission, setPermission] = useState<Location.PermissionStatus | "unknown">("unknown");
   const [location, setLocation] = useState<Location.LocationObject | null>(null);
@@ -140,25 +147,44 @@ function useGeofenceStatus(
   return status;
 }
 
-function useZoneAlerts(enabled: boolean, contractAddress?: string) {
+function useZoneAlerts(enabled: boolean, contractAddress?: string): [boolean, Alert[]] {
   const [listening, setListening] = useState(false);
+  const [alerts, setAlerts] = useState<Alert[]>([]);
 
   useEffect(() => {
     if (!enabled || !contractAddress) {
       setListening(false);
+      setAlerts([]);
       return;
     }
 
     const provider = new ethers.WebSocketProvider(INFURA_WS_URL);
     const contract = new ethers.Contract(contractAddress, contractJson.abi, provider);
-    const seenTxs = new Set<string>();
 
-    const handler = async (sender: string, message: string, event: any) => {
-      if (seenTxs.has(event.transactionHash)) return;
-      seenTxs.add(event.transactionHash);
+    const handler = async (
+      sender: string,
+      zoneNumber: number,
+      message: string,
+      numberPlate: string,
+      make: string,
+      model: string,
+      wtc: string,
+      event: any
+    ) => {
+
+      const newAlert: Alert = {
+        zoneNumber,
+        message,
+        numberPlate,
+        make,
+        model,
+        wtc,
+      };
+
+      setAlerts((prevAlerts) => [newAlert, ...prevAlerts]);
 
       await Notifications.scheduleNotificationAsync({
-        content: { title: "Zone Alert", body: message },
+        content: { title: `Zone ${newAlert.zoneNumber} Alert`, body: message },
         trigger: null,
       });
     };
@@ -167,28 +193,30 @@ function useZoneAlerts(enabled: boolean, contractAddress?: string) {
     setListening(true);
 
     return () => {
-      try { contract.off("AlertPosted", handler); } catch { }
-      try { provider.destroy(); } catch { }
+      try {
+        contract.off("AlertPosted", handler);
+      } catch (e) {
+        console.error("Error detaching listener:", e);
+      }
+      try {
+        provider.destroy();
+      } catch (e) {
+        console.error("Error destroying provider:", e);
+      }
       setListening(false);
     };
   }, [enabled, contractAddress]);
 
-  return listening;
+  return [listening, alerts];
 }
 
-// ---------- screen ----------
 function HomeScreen() {
   const { user } = useAuth();
-
   const { permission, location } = useLocation();
-
   const { zone, refetch } = useZone(location);
-
   const status = useGeofenceStatus(permission, location, zone);
+  const [listening, alerts] = useZoneAlerts(status === "Inside", zone?.contractAddress);
 
-  const listening = useZoneAlerts(status === "Inside", zone?.contractAddress);
-
-  // 🔄 refetch whenever status changes
   useEffect(() => {
     if (!location?.coords) return;
     refetch(location.coords.latitude, location.coords.longitude, true);
@@ -210,12 +238,14 @@ function HomeScreen() {
             </View>
           </View>
         </View>
-        <View className='flex justify-center items-end flex-1 self-center'>
-          <Image
-            source={{ uri: user?.photo ?? "https://placehold.co/100x100/E2E8F0/4A5568?text=No+Image" }}
-            style={styles.profilePhoto}
-          />
-        </View>
+        <Link href={'/profile'}>
+          <View className='flex justify-center items-end flex-1 self-center'>
+            <Image
+              source={{ uri: user?.photo ?? "https://placehold.co/100x100/E2E8F0/4A5568?text=No+Image" }}
+              style={styles.profilePhoto}
+            />
+          </View>
+        </Link>
       </View>
 
       <ScrollView
@@ -340,9 +370,9 @@ function HomeScreen() {
         <View className='flex-col justify-start items-start w-full bg-[#F3F4F6] rounded-xl p-5 gap-3 flex-1'>
           <Text style={{ fontFamily: "Poppins_500Medium" }} className='text-2xl'>Alerts</Text>
           <AlertLoader listening={listening} />
-          {Array.from({ length: 10 }).map((_, idx) => (
-            <AlertCard key={idx} zoneNumber={idx + 1} />
-          ))}
+          {
+            alerts.map((alert, idx)=><AlertCard alert={alert} key={idx}/>)
+          }
         </View>
       </ScrollView>
 
