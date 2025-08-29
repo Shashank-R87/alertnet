@@ -6,6 +6,8 @@ node_modules/
 # env files
 .env
 
+*.jks
+
 # Expo
 .expo/
 dist/
