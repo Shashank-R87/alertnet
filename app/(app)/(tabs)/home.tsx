@@ -1,6 +1,6 @@
 import AlertCard from '@/components/AlertCard';
 import AlertLoader from '@/components/AlertLoader';
-import ZoneMap from '@/components/ZoneMapComponent';
+import ZoneMapComponent from '@/components/ZoneMapComponent';
 import { useAuth } from '@/context/AuthContext';
 import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
 import { ethers } from "ethers";
@@ -266,7 +266,7 @@ function HomeScreen() {
               {zone ? (
                 <View
                   className='w-36 flex justify-center items-center aspect-square'>
-                  <ZoneMap location={location} zone={zone} enableInteraction={false} />
+                  <ZoneMapComponent location={location} zone={zone} enableInteraction={false} />
                   {/* <Image
                     source={require('@/assets/images/noun-maps.svg')}
                     style={styles.maps}
