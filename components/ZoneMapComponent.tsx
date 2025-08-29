@@ -1,7 +1,7 @@
 import * as Location from 'expo-location';
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
-import MapView, { Circle, Marker, UrlTile } from 'react-native-maps';
+import MapView, { Circle, Marker, PROVIDER_DEFAULT, UrlTile } from 'react-native-maps';
 
 type Zone = {
   zoneName: string;
@@ -14,12 +14,10 @@ type Zone = {
 type ZoneMapProps = {
   location: Location.LocationObject | null;
   zone: Zone | null;
-  enableInteraction: boolean
+  enableInteraction: boolean;
 };
 
 const ZoneMapComponent = ({ location, zone, enableInteraction }: ZoneMapProps) => {
-  const mapRef = React.useRef<MapView>(null);
-
   const initialRegion = {
     latitude: zone?.latitude || 12.9716,
     longitude: zone?.longitude || 77.5946,
@@ -28,9 +26,12 @@ const ZoneMapComponent = ({ location, zone, enableInteraction }: ZoneMapProps) =
   };
 
   return (
-    <View style={{ borderRadius: enableInteraction ? 0 : 10 }} className={`w-full ${enableInteraction ? 'h-full' : 'aspect-square'} bg-[#E5E7EB] overflow-hidden`}>
+    <View
+      style={{ borderRadius: enableInteraction ? 0 : 10 }}
+      className={`w-full ${enableInteraction ? 'h-full' : 'aspect-square'} bg-[#E5E7EB] overflow-hidden`}
+    >
       <MapView
-        ref={mapRef}
+        provider={PROVIDER_DEFAULT}
         style={styles.map}
         initialRegion={initialRegion}
         showsUserLocation={false}
@@ -38,8 +39,9 @@ const ZoneMapComponent = ({ location, zone, enableInteraction }: ZoneMapProps) =
         zoomEnabled={enableInteraction}
         rotateEnabled={enableInteraction}
       >
+        {/* OpenStreetMap tiles */}
         <UrlTile
-          urlTemplate="https://tiles.stadiamaps.com/tiles/alidade_smooth/{z}/{x}/{y}.png"
+          urlTemplate="https://tile.openstreetmap.org/{z}/{x}/{y}.png"
           maximumZ={19}
         />
 
