@@ -8,7 +8,6 @@ import { useEffect } from 'react';
 import '../global.css';
 
 SplashScreen.preventAutoHideAsync();
-initializeNotifications();
 
 GoogleSignin.configure({
   iosClientId: "116250151998-bct3cu88f6lu3fqjngsvk9sb9fim7kro.apps.googleusercontent.com",
@@ -30,6 +29,8 @@ function RootLayoutNav() {
     if (isLoading || !fontsLoaded) {
       return;
     }
+
+    initializeNotifications();
 
     const inAppGroup = segments[0] === '(app)';
     const inAuthGroup = segments[0] === '(auth)';
