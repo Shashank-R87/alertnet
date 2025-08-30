@@ -94,5 +94,3 @@ const styles = StyleSheet.create({
         height: 180,
     },
 });
-
-export default Profile
