@@ -6,7 +6,7 @@ node_modules/
 # env files
 .env
 
-*.jks
+credentials/
 
 # Expo
 .expo/
