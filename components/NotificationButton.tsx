@@ -1,8 +1,28 @@
-import * as Notifications from 'expo-notifications';
-import React from 'react';
-import { Alert, Platform, Text, TouchableOpacity } from 'react-native';
+import * as Notifications from "expo-notifications";
+import { Platform } from "react-native";
 
-export const initializeNotifications = () => {
+let hasInitialized = false;
+
+export async function initializeNotifications() {
+  if (hasInitialized) return;
+  hasInitialized = true;
+
+  const { status } = await Notifications.requestPermissionsAsync();
+  if (status !== "granted") {
+    console.warn("Notification permissions not granted");
+    return;
+  }
+
+  if (Platform.OS === "android") {
+    await Notifications.setNotificationChannelAsync("default", {
+      name: "Default",
+      importance: Notifications.AndroidImportance.MAX,
+      sound: "default",
+      vibrationPattern: [0, 250, 250, 250],
+      lightColor: "#FF231F7C",
+    });
+  }
+
   Notifications.setNotificationHandler({
     handleNotification: async () => ({
       shouldPlaySound: true,
@@ -11,39 +31,4 @@ export const initializeNotifications = () => {
       shouldShowList: true,
     }),
   });
-};
-
-const NotificationButton: React.FC = () => {
-  const handlePress = async () => {
-    const { status } = await Notifications.requestPermissionsAsync();
-    if (status !== 'granted') {
-      Alert.alert('Permission Denied', 'You need to grant notification permissions.');
-      return;
-    }
-
-    if (Platform.OS === 'android') {
-      await Notifications.setNotificationChannelAsync('default', {
-        name: 'default',
-        importance: Notifications.AndroidImportance.MAX,
-      });
-    }
-
-    await Notifications.scheduleNotificationAsync({
-      content: {
-        title: "Local Notification 📦",
-        body: 'This is a local notification from AlertNet.',
-      },
-      trigger: null
-    });
-  };
-
-  return (
-    <TouchableOpacity activeOpacity={0.6} onPress={handlePress} className='bg-gray-100 rounded-xl px-5 py-2 shadow-sm shadow-slate-400'>
-      <Text style={{fontFamily: "Poppins_400Regular"}} className='text-lg'>
-        Send Notification
-      </Text>
-    </TouchableOpacity>
-  );
-};
-
-export default NotificationButton;
+}
