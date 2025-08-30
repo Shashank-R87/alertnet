@@ -1,8 +1,7 @@
-import MapLibreGL from "@maplibre/maplibre-react-native";
-import * as turf from "@turf/turf";
-import * as Location from "expo-location";
-import React from "react";
-import { StyleSheet, View } from "react-native";
+import * as Location from 'expo-location';
+import React from 'react';
+import { StyleSheet, View } from 'react-native';
+import MapView, { Circle, Marker, PROVIDER_DEFAULT, UrlTile } from 'react-native-maps';
 
 type Zone = {
   zoneName: string;
@@ -18,48 +17,49 @@ type ZoneMapProps = {
   enableInteraction: boolean;
 };
 
-const ZoneMapComponent = ({
-  location,
-  zone,
-  enableInteraction,
-}: ZoneMapProps) => {
-
-  const center: [number, number] = [zone?.longitude || 77.5946, zone?.latitude || 12.9716,]; // [lng, lat]
-  const user: [number, number] = [location?.coords.longitude || 77.5946, location?.coords.latitude || 12.9716];
-
-  const circle = turf.circle(center, (zone?.radius || 100) / 1000, {
-    steps: 64,
-    units: "kilometers",
-  });
+const ZoneMapComponent = ({ location, zone, enableInteraction }: ZoneMapProps) => {
+  const initialRegion = {
+    latitude: zone?.latitude || 12.9716,
+    longitude: zone?.longitude || 77.5946,
+    latitudeDelta: enableInteraction ? 0.002 : 0.003,
+    longitudeDelta: enableInteraction ? 0.002 : 0.003,
+  };
 
   return (
     <View
       style={{ borderRadius: enableInteraction ? 0 : 10 }}
-      className={`w-full ${enableInteraction ? "h-full" : "aspect-square"} bg-[#E5E7EB] overflow-hidden`}
+      className={`w-full ${enableInteraction ? 'h-full' : 'aspect-square'} bg-[#E5E7EB] overflow-hidden`}
     >
-      <MapLibreGL.MapView
-        style={[{ flex: 1 }, styles.map]}
-        mapStyle={require("./simple-style.json")}
-        logoEnabled={enableInteraction}
+      <MapView
+        provider={PROVIDER_DEFAULT}
+        style={styles.map}
+        initialRegion={initialRegion}
+        showsUserLocation={false}
         scrollEnabled={enableInteraction}
-        rotateEnabled={enableInteraction}
         zoomEnabled={enableInteraction}
+        rotateEnabled={enableInteraction}
       >
-        <MapLibreGL.Camera centerCoordinate={center} zoomLevel={14} />
+        {/* OpenStreetMap tiles */}
+        <UrlTile
+          urlTemplate="https://tile.openstreetmap.org/{z}/{x}/{y}.png"
+          maximumZ={19}
+        />
 
-        <MapLibreGL.ShapeSource id="geofence" shape={circle}>
-          <MapLibreGL.FillLayer
-            id="geofenceFill"
-            style={{ fillColor: "rgba(0,150,255,0.3)" }}
+        {zone && zone.radius > 0 && (
+          <Circle
+            center={{ latitude: zone.latitude, longitude: zone.longitude }}
+            radius={zone.radius}
+            strokeColor="rgba(0, 150, 255, 0.7)"
+            fillColor="rgba(0, 150, 255, 0.2)"
           />
-        </MapLibreGL.ShapeSource>
+        )}
 
-        <MapLibreGL.PointAnnotation id="user" coordinate={user}>
-          <View
-            style={styles.userMarker}
-          />
-        </MapLibreGL.PointAnnotation>
-      </MapLibreGL.MapView>
+        {location?.coords && (
+          <Marker coordinate={location.coords} anchor={{ x: 0.5, y: 0.5 }}>
+            <View style={styles.userMarker} />
+          </Marker>
+        )}
+      </MapView>
     </View>
   );
 };
@@ -69,8 +69,8 @@ const styles = StyleSheet.create({
     width: 14,
     height: 14,
     borderRadius: 10,
-    backgroundColor: "rgba(0, 122, 255, 0.9)",
-    borderColor: "white",
+    backgroundColor: 'rgba(0, 122, 255, 0.9)',
+    borderColor: 'white',
     borderWidth: 2,
   },
   map: {
