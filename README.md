@@ -1,50 +1,85 @@
-# Welcome to your Expo app 👋
+# AlertNet  
+**Connecting drivers, securing roads**  
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+AlertNet is a blockchain + cloud powered platform that delivers **real-time zone alerts** to drivers, ensuring safer and smarter roads. Built with an integrated mobile app, smart contracts, and cloud-based APIs, AlertNet connects drivers to their environment seamlessly.  
 
-## Get started
+---
 
-1. Install dependencies
+## 🌟 Features
+- 📡 **Real-time Zone Alerts** – Receive push notifications when entering/exiting critical zones.  
+- 🔗 **Blockchain-backed Security** – Alerts are transparent, immutable, and verifiable on-chain.  
+- ☁️ **Cloud Integration** – AWS Lambda + RDS API to fetch zone details dynamically.  
+- 📍 **Geofencing** – Auto-detect your location and fetch nearby zone information.  
+- 📱 **Mobile App (Expo)** – Simple and intuitive driver-facing application.  
 
-   ```bash
-   npm install
-   ```
+---
 
-2. Start the app
+## 🏗️ Architecture
+1. **Mobile App (React Native + Expo)** – Driver-side app that connects to zones and listens for alerts.  
+2. **Smart Contracts (Hardhat + Infura)** – Immutable logging of events and zone alerts on Ethereum Sepolia.  
+3. **AWS Cloud**  
+   - **API Gateway + Lambda** → Handles requests from the app and fetches zone details.  
+   - **RDS (PostgreSQL)** → Stores geofence zones with coordinates and metadata.  
+   - **VPC** → Network isolation for database and services.  
 
-   ```bash
-   npx expo start
-   ```
+---
 
-In the output, you'll find options to open the app in a
+## 🚀 Getting Started
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+### Prerequisites
+- Node.js & npm  
+- Hardhat (for contracts)  
+- Infura project ID (for Ethereum Sepolia)  
+- AWS account (for Lambda + RDS setup)  
+- Expo Go (for testing the mobile app)  
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
-
+### Installation
+Clone the repository:  
 ```bash
-npm run reset-project
+git clone https://github.com/your-username/alertnet.git
+cd alertnet
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+Install dependencies:  
+```bash
+npm install
+```
 
-## Learn more
+Run mobile app:  
+```bash
+npx expo start
+```
 
-To learn more about developing your project with Expo, look at the following resources:
+Deploy contracts:  
+```bash
+npx hardhat run scripts/deploy.js --network sepolia
+```
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+---
 
-## Join the community
+## 📖 Usage
+1. Open the AlertNet app on your device.  
+2. Allow location permissions.  
+3. The app will fetch your current zone via API Gateway.  
+4. If inside a registered zone, it connects to the zone’s smart contract and starts listening for alerts.  
+5. Drivers receive instant blockchain-backed notifications.  
 
-Join our community of developers creating universal apps.
+---
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+## 📂 Project Structure
+```
+/app              -> Expo mobile application
+/contracts        -> Solidity smart contracts
+/lib              -> Contract ABIs and shared utilities
+/lambda           -> AWS Lambda functions
+```
+
+---
+
+## 🌍 Team
+Built with ❤️ in **Bengaluru** by the AlertNet team.  
+
+---
+
+## 📜 License
+MIT License © 2025 AlertNet
