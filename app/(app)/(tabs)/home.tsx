@@ -41,7 +41,6 @@ type Alert = {
 
 type GeoStatus = "Inside" | "Outside" | "Checking..." | "Permission Denied";
 
-<<<<<<< HEAD
 const API_CHECK_ZONE =
   "https://dbsxbxyn12.execute-api.ap-south-1.amazonaws.com/findZone";
 const INFURA_WS_URL = `wss://sepolia.infura.io/ws/v3/d78f0b4330ec4a16aafc769d03977a98`;
@@ -50,24 +49,13 @@ function haversine(
   p1: { lat: number; lon: number },
   p2: { lat: number; lon: number }
 ) {
-=======
-const API_CHECK_ZONE = "https://dbsxbxyn12.execute-api.ap-south-1.amazonaws.com/findZone";
-const INFURA_WS_URL = `wss://sepolia.infura.io/ws/v3/d78f0b4330ec4a16aafc769d03977a98`;
-
-function haversine(p1: { lat: number; lon: number }, p2: { lat: number; lon: number }) {
->>>>>>> 5eb9be191ca928e8617a991d9ba73eb41f9de069
   const R = 6371e3;
   const φ1 = (p1.lat * Math.PI) / 180;
   const φ2 = (p2.lat * Math.PI) / 180;
   const Δφ = ((p2.lat - p1.lat) * Math.PI) / 180;
   const Δλ = ((p2.lon - p1.lon) * Math.PI) / 180;
   const a =
-<<<<<<< HEAD
     Math.sin(Δφ / 2) ** 2 + Math.cos(φ1) * Math.cos(φ2) * Math.sin(Δλ / 2) ** 2;
-=======
-    Math.sin(Δφ / 2) ** 2 +
-    Math.cos(φ1) * Math.cos(φ2) * Math.sin(Δλ / 2) ** 2;
->>>>>>> 5eb9be191ca928e8617a991d9ba73eb41f9de069
   return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 }
 
@@ -75,17 +63,12 @@ const fmt = (n?: number, d: number = 4) =>
   typeof n === "number" ? n.toFixed(d) : "--";
 
 function useLocation() {
-<<<<<<< HEAD
   const [permission, setPermission] = useState<
     Location.PermissionStatus | "unknown"
   >("unknown");
   const [location, setLocation] = useState<Location.LocationObject | null>(
     null
   );
-=======
-  const [permission, setPermission] = useState<Location.PermissionStatus | "unknown">("unknown");
-  const [location, setLocation] = useState<Location.LocationObject | null>(null);
->>>>>>> 5eb9be191ca928e8617a991d9ba73eb41f9de069
   const subRef = useRef<Location.LocationSubscription | null>(null);
 
   useEffect(() => {
@@ -119,7 +102,6 @@ function useZone(location: Location.LocationObject | null) {
   const lastFetchAt = useRef<number>(0);
   const lastSent = useRef<{ lat: number; lon: number } | null>(null);
 
-<<<<<<< HEAD
   const fetchZone = useCallback(
     async (lat: number, lon: number, force = false) => {
       const now = Date.now();
@@ -153,39 +135,6 @@ function useZone(location: Location.LocationObject | null) {
     },
     []
   );
-=======
-  const fetchZone = useCallback(async (lat: number, lon: number, force = false) => {
-    const now = Date.now();
-    const movedEnough =
-      !lastSent.current ||
-      haversine({ lat, lon }, lastSent.current) >= 30; // 30m threshold
-    const timeElapsed = now - lastFetchAt.current > 15000; // 15s throttle
-
-    if (!force && !movedEnough && !timeElapsed) return;
-
-    try {
-      const res = await fetch(API_CHECK_ZONE, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ latitude: lat, longitude: lon }),
-      });
-      const data = await res.json();
-
-      setZone({
-        zoneName: data.zoneName ?? data.name ?? "Zone",
-        contractAddress: data.contractAddress ?? data.contract_address,
-        latitude: Number(data.latitude),
-        longitude: Number(data.longitude),
-        radius: Number(data.radius),
-      });
-
-      lastFetchAt.current = now;
-      lastSent.current = { lat, lon };
-    } catch (e) {
-      console.warn("Zone fetch failed:", e);
-    }
-  }, []);
->>>>>>> 5eb9be191ca928e8617a991d9ba73eb41f9de069
 
   useEffect(() => {
     if (!location?.coords) return;
