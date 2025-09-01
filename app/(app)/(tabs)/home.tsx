@@ -202,7 +202,6 @@ function useZoneAlerts(
       timestampMillis: number,
       event: any
     ) => {
-
       const timeAgo = formatDistanceToNow(new Date(Number(timestampMillis)), {
         addSuffix: true,
       });
@@ -261,6 +260,16 @@ function HomeScreen() {
     status === "Inside",
     zone?.contractAddress
   );
+
+  const [, setTime] = useState(Date.now());
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setTime(Date.now());
+    }, 60000);
+
+    return () => clearInterval(interval);
+  }, []);
 
   // useEffect(() => {
   //   if (!location?.coords) return;
@@ -353,6 +362,7 @@ function HomeScreen() {
                     location={location}
                     zone={zone}
                     enableInteraction={false}
+                    alerts={alerts}
                   />
                   {/* <Image
                     source={require('@/assets/images/noun-maps.svg')}
@@ -432,6 +442,9 @@ function HomeScreen() {
                     params: {
                       zone: JSON.stringify(zone),
                       location: JSON.stringify(location),
+                      alerts: JSON.stringify(alerts, (key, value) =>
+                        typeof value === "bigint" ? value.toString() : value
+                      ),
                     },
                   }}
                   className="flex gap-3 self-end"
