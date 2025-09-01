@@ -8,6 +8,10 @@ type Alert = {
   make: string;
   model: string;
   wtc: string;
+  latitude: number;
+  longitude: number;
+  timestampMillis: number;
+  timeAgo: string;
 };
 
 const AlertCard = ({alert}:{alert: Alert}) => {
@@ -18,7 +22,7 @@ const AlertCard = ({alert}:{alert: Alert}) => {
                   Alert Active: Zone {alert.zoneNumber}
                 </Text>
                 <Text style={{ fontFamily: "Poppins_500Medium" }} className='text-base pb-1 text-gray-500'>
-                  26th August 2025
+                  {alert.timeAgo}
                 </Text>
               </View>
 

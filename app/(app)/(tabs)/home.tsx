@@ -3,6 +3,7 @@ import AlertLoader from "@/components/AlertLoader";
 import ZoneMapComponent from "@/components/ZoneMapComponent";
 import { useAuth } from "@/context/AuthContext";
 import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
+import { formatDistanceToNow } from "date-fns";
 import { ethers } from "ethers";
 import { Image } from "expo-image";
 import { LinearGradient } from "expo-linear-gradient";
@@ -37,6 +38,10 @@ type Alert = {
   make: string;
   model: string;
   wtc: string;
+  latitude: number;
+  longitude: number;
+  timestampMillis: number;
+  timeAgo: string;
 };
 
 type GeoStatus = "Inside" | "Outside" | "Checking..." | "Permission Denied";
@@ -192,8 +197,16 @@ function useZoneAlerts(
       make: string,
       model: string,
       wtc: string,
+      latitude: number,
+      longitude: number,
+      timestampMillis: number,
       event: any
     ) => {
+
+      const timeAgo = formatDistanceToNow(new Date(Number(timestampMillis)), {
+        addSuffix: true,
+      });
+
       const newAlert: Alert = {
         zoneNumber,
         message,
@@ -201,7 +214,14 @@ function useZoneAlerts(
         make,
         model,
         wtc,
+        latitude,
+        longitude,
+        timestampMillis,
+        timeAgo: timeAgo,
       };
+
+      newAlert.latitude = Number(newAlert.latitude) / 1000000;
+      newAlert.longitude = Number(newAlert.longitude) / 1000000;
 
       setAlerts((prevAlerts) => [newAlert, ...prevAlerts]);
 
