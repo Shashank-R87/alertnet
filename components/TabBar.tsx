@@ -8,6 +8,7 @@ export function MyTabBar({ state, descriptors, navigation }: BottomTabBarProps) 
 
     const icon: Record<string, (props: any) => JSX.Element> = {
         home: (props: any) => <Foundation name="home" size={24} color={'#000'} {...props} />,
+        send: (props: any) => <FontAwesome name="send" size={20} color={'#000'} {...props} />,
         profile: (props: any) => <FontAwesome name="user" size={24} color={'#000'} {...props} />,
     };
 
@@ -65,7 +66,7 @@ const styles = StyleSheet.create({
         justifyContent: "space-between",
         alignItems: 'center',
         backgroundColor: '#fff',
-        marginHorizontal: 120,
+        marginHorizontal: 100,
         paddingVertical: 15,
         borderRadius: 35,
     },
