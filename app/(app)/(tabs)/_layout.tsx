@@ -13,6 +13,7 @@ export default function AppLayout() {
       }}
       tabBar={(props) => <MyTabBar {...props} />}>
       <Tabs.Screen name='home'></Tabs.Screen>
+      <Tabs.Screen name='send'></Tabs.Screen>
       <Tabs.Screen name='profile'></Tabs.Screen>
     </Tabs>
   );
