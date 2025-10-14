@@ -24,7 +24,6 @@
       "edgeToEdgeEnabled": true,
       "package": "com.cloud.alertnet",
       "backgroundColor": "#ffffff"
-
     },
     "web": {
       "bundler": "metro",
@@ -63,7 +62,7 @@
           "locationAlwaysAndWhenInUsePermission": "Allow $(PRODUCT_NAME) to use your location."
         }
       ],
-            [
+      [
         "@maplibre/maplibre-react-native",
         {
           "locationWhenInUsePermission": "Allow $(PRODUCT_NAME) to use your location."
