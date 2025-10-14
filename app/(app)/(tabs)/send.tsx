@@ -1,210 +1,37 @@
 import AlertLoader from "@/components/AlertLoader";
 import SendAlertComponent from "@/components/SendAlertComponent";
 import { useAuth } from "@/context/AuthContext";
+import { useZoneContext } from "@/context/ZoneContext";
 import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
 import { Image } from "expo-image";
 import { LinearGradient } from "expo-linear-gradient";
-import * as Location from "expo-location";
-import * as Notifications from "expo-notifications";
 import { Link } from "expo-router";
 import { StatusBar } from "expo-status-bar";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useState } from "react";
 import {
-    KeyboardAvoidingView,
-    Platform,
-    RefreshControl,
-    ScrollView,
-    StyleSheet,
-    Text,
-    View,
+  KeyboardAvoidingView,
+  Platform,
+  RefreshControl,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-type Zone = {
-  zoneName: string;
-  contractAddress: string;
-  latitude: number;
-  longitude: number;
-  radius: number;
-};
-
-type Alert = {
-  zoneNumber: number;
-  message: string;
-  numberPlate: string;
-  make: string;
-  model: string;
-  wtc: string;
-  latitude: number;
-  longitude: number;
-  timestampMillis: number;
-};
-
-type GeoStatus = "Inside" | "Outside" | "Checking..." | "Permission Denied";
-
-const API_CHECK_ZONE =
-  "https://dbsxbxyn12.execute-api.ap-south-1.amazonaws.com/findZone";
-const INFURA_WS_URL = `wss://sepolia.infura.io/ws/v3/d78f0b4330ec4a16aafc769d03977a98`;
-
-function haversine(
-  p1: { lat: number; lon: number },
-  p2: { lat: number; lon: number }
-) {
-  const R = 6371e3;
-  const φ1 = (p1.lat * Math.PI) / 180;
-  const φ2 = (p2.lat * Math.PI) / 180;
-  const Δφ = ((p2.lat - p1.lat) * Math.PI) / 180;
-  const Δλ = ((p2.lon - p1.lon) * Math.PI) / 180;
-  const a =
-    Math.sin(Δφ / 2) ** 2 + Math.cos(φ1) * Math.cos(φ2) * Math.sin(Δλ / 2) ** 2;
-  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-}
-
-const fmt = (n?: number, d: number = 4) =>
-  typeof n === "number" ? n.toFixed(d) : "--";
-
-function useLocation() {
-  const [permission, setPermission] = useState<
-    Location.PermissionStatus | "unknown"
-  >("unknown");
-  const [location, setLocation] = useState<Location.LocationObject | null>(
-    null
-  );
-  const subRef = useRef<Location.LocationSubscription | null>(null);
-
-  useEffect(() => {
-    (async () => {
-      const { status } = await Location.requestForegroundPermissionsAsync();
-      setPermission(status);
-      if (status !== "granted") return;
-
-      const sub = await Location.watchPositionAsync(
-        {
-          accuracy: Location.Accuracy.Balanced,
-          timeInterval: 5000,
-          distanceInterval: 10,
-        },
-        (loc) => setLocation(loc)
-      );
-      subRef.current = sub;
-    })();
-
-    return () => {
-      subRef.current?.remove();
-      subRef.current = null;
-    };
-  }, []);
-
-  return { permission, location };
-}
-
-function useZone(location: Location.LocationObject | null) {
-  const [zone, setZone] = useState<Zone | null>(null);
-  const [connected, setConnected] = useState<boolean>(false);
-  const lastFetchAt = useRef<number>(0);
-  const lastSent = useRef<{ lat: number; lon: number } | null>(null);
-
-  const fetchZone = useCallback(
-    async (lat: number, lon: number, force = false) => {
-      const now = Date.now();
-      const movedEnough =
-        !lastSent.current || haversine({ lat, lon }, lastSent.current) >= 30; // 30m threshold
-      const timeElapsed = now - lastFetchAt.current > 15000; // 15s throttle
-
-      if (!force && !movedEnough && !timeElapsed) return;
-
-      try {
-        const res = await fetch(API_CHECK_ZONE, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ latitude: lat, longitude: lon }),
-        });
-        const data = await res.json();
-
-        setZone({
-          zoneName: data.zoneName ?? data.name ?? "Zone",
-          contractAddress: data.contractAddress ?? data.contract_address,
-          latitude: Number(data.latitude),
-          longitude: Number(data.longitude),
-          radius: Number(data.radius),
-        });
-
-        if (zone?.zoneName === "Zone") {
-          setConnected(false);
-        } else {
-          setConnected(true);
-        }
-
-        lastFetchAt.current = now;
-        lastSent.current = { lat, lon };
-      } catch (e) {
-        console.warn("Zone fetch failed:", e);
-        setConnected(false);
-      }
-    },
-    []
-  );
-
-  useEffect(() => {
-    if (!location?.coords) return;
-    fetchZone(location.coords.latitude, location.coords.longitude);
-  }, [location, fetchZone]);
-
-  return { zone, refetch: fetchZone, connected };
-}
-
-function useGeofenceStatus(
-  permission: Location.PermissionStatus | "unknown",
-  location: Location.LocationObject | null,
-  zone: Zone | null
-) {
-  const status: GeoStatus = useMemo(() => {
-    if (permission === "unknown") return "Checking...";
-    if (permission !== "granted") return "Permission Denied";
-    if (!location || !zone) return "Checking...";
-    const d = haversine(
-      { lat: location.coords.latitude, lon: location.coords.longitude },
-      { lat: zone.latitude, lon: zone.longitude }
-    );
-    return d < (zone.radius ?? 0) ? "Inside" : "Outside";
-  }, [permission, location, zone]);
-
-  return status;
-}
-
 function Send() {
   const { user } = useAuth();
-  const { permission, location } = useLocation();
-  const { zone, refetch, connected } = useZone(location);
-  const status = useGeofenceStatus(permission, location, zone);
+  const { location, zone, connected } = useZoneContext();
 
   const [refreshing, setRefreshing] = useState(false);
   const [componentKey, setComponentKey] = useState(0);
   const onRefresh = useCallback(() => {
+
     setRefreshing(true);
     setComponentKey((prevKey) => prevKey + 1);
     setRefreshing(false);
   }, []);
-
-  const [, setTime] = useState(Date.now());
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setTime(Date.now());
-    }, 60000);
-
-    return () => clearInterval(interval);
-  }, []);
-
-  useEffect(() => {
-    (async () => {
-      const { status } = await Notifications.requestPermissionsAsync();
-      if (status !== "granted") {
-        console.warn("Notification permission not granted!");
-      }
-    })();
-  }, []);
-
+  
   const tabBarHeight = useBottomTabBarHeight();
 
   return (

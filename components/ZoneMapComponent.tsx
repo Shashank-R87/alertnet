@@ -84,34 +84,41 @@ const ZoneMapComponent = ({
           <View style={styles.userMarker} />
         </MapLibreGL.PointAnnotation>
 
-        {alerts &&
-          alerts.length > 0 &&
-          alerts.map((alert) => {
+{alerts &&
+  alerts.length > 0 &&
+  alerts.map((alert) => {
+    const lat =
+      Math.abs(alert.latitude) > 90
+        ? alert.latitude / 1_000_000
+        : alert.latitude;
+    const lng =
+      Math.abs(alert.longitude) > 180
+        ? alert.longitude / 1_000_000
+        : alert.longitude;
 
-            const timeAgo = formatDistanceToNow(
-              new Date(Number(alert.timestampMillis)),
-              {
-                addSuffix: true,
-              }
-            );
+    const timeAgo = formatDistanceToNow(
+      new Date(Number(alert.timestampMillis)),
+      { addSuffix: true }
+    );
 
-            return (
-              <MapLibreGL.PointAnnotation
-                key={alert.timestampMillis}
-                id={alert.timestampMillis.toString()}
-                coordinate={[alert.longitude, alert.latitude]}
-              >
-                <View style={styles.alertMarker} />
-                <MapLibreGL.Callout>
-                  <View style={styles.calloutContainer}>
-                    <Text style={styles.calloutTitle}>{alert.numberPlate}</Text>
-                    <Text style={styles.calloutText}>{alert.message}</Text>
-                    <Text style={styles.calloutText}>{timeAgo}</Text>
-                  </View>
-                </MapLibreGL.Callout>
-              </MapLibreGL.PointAnnotation>
-            );
-          })}
+    return (
+      <MapLibreGL.PointAnnotation
+        key={alert.timestampMillis}
+        id={alert.timestampMillis.toString()}
+        coordinate={[lng, lat]}
+      >
+        <View style={styles.alertMarker} />
+        <MapLibreGL.Callout>
+          <View style={styles.calloutContainer}>
+            <Text style={styles.calloutTitle}>{alert.numberPlate}</Text>
+            <Text style={styles.calloutText}>{alert.message}</Text>
+            <Text style={styles.calloutText}>{timeAgo}</Text>
+          </View>
+        </MapLibreGL.Callout>
+      </MapLibreGL.PointAnnotation>
+    );
+  })}
+
       </MapLibreGL.MapView>
     </View>
   );
